@@ -14,13 +14,13 @@ type EpsilonGreedy struct {
 
 // SelectArm chooses an arm that exploits if the value is more than the epsilon
 // threshold, and explore if the value is less than epsilon
-func (b *EpsilonGreedy) SelectArm() (int, bool) {
+func (b *EpsilonGreedy) SelectArm() int {
 	// Exploit
 	if rand.Float64() > b.Epsilon {
-		return max(b.Rewards...), true
+		return max(b.Rewards...)
 	}
 	// Explore
-	return rand.Intn(len(b.Rewards)), false
+	return rand.Intn(len(b.Rewards))
 }
 
 // Update will update an arm with some reward value,

@@ -1,0 +1,38 @@
+package bandit
+
+import "math"
+
+type AnnealingSoftmax struct {
+	Epsilon float64
+	Counts  []int64
+	Rewards []float64
+	N       int
+}
+
+func (a *AnnealingSoftmax) SelectArm() int {
+	t := sumInt64(a.Counts...) + 1
+	var epsilon float64
+	epsilon = 1 / math.Log(float64(t)+0.0000001)
+
+	exp := make([]float64, a.N)
+	for i := 0; i < a.N; i++ {
+		reward := a.Rewards[i]
+		exp[i] = math.Exp(reward / epsilon)
+	}
+	z := sumFloat64(exp...)
+
+	probs := make([]float64, a.N)
+	for i := 0; i < a.N; i++ {
+		reward := a.Rewards[i]
+		probs[i] = math.Exp(reward/epsilon) / z
+	}
+	return categoricalProb(probs...)
+}
+
+func (a *AnnealingSoftmax) Update(chosenArm int, reward float64) {
+	a.Counts[chosenArm] = a.Counts[chosenArm] + 1
+	n := float64(a.Counts[chosenArm])
+	value := a.Rewards[chosenArm]
+	newValue := ((n-1)/n)*value + (1/n)*reward
+	a.Rewards[chosenArm] = newValue
+}
