@@ -38,7 +38,7 @@ func (a *AnnealingSoftmax) Update(chosenArm int, reward float64) {
 	a.Counts[chosenArm] = a.Counts[chosenArm] + 1
 	n := float64(a.Counts[chosenArm])
 	value := a.Rewards[chosenArm]
-	newValue := ((n-1)/n)*value + (1/n)*reward
+	newValue := (((n - 1) / n) * value) + ((1 / n) * reward)
 	a.Rewards[chosenArm] = newValue
 }
 

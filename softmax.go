@@ -34,7 +34,7 @@ func (s *Softmax) Update(chosenArm int, reward float64) {
 	s.Counts[chosenArm] = s.Counts[chosenArm] + 1
 	n := float64(s.Counts[chosenArm])
 	value := s.Rewards[chosenArm]
-	newValue := ((n-1)/n)*value + (1/n)*reward
+	newValue := (((n - 1) / n) * value) + ((1 / n) * reward)
 	s.Rewards[chosenArm] = newValue
 }
 

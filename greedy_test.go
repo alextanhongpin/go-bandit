@@ -1,8 +1,11 @@
 package bandit
 
 import (
+	"encoding/csv"
+	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 )
@@ -39,6 +42,10 @@ func TestNewBandit(t *testing.T) {
 	if wantValues != gotValues {
 		t.Errorf("want %v, got %v", wantValues, gotValues)
 	}
+	nPull := 1000
+	chosenArms := make([]int, nPull)
+	rewards := make([]float64, nPull)
+	cumulativeRewards := make([]float64, nPull)
 
 	for i := 0; i < 1000; i++ {
 		arm := bandit.SelectArm()
@@ -47,8 +54,47 @@ func TestNewBandit(t *testing.T) {
 			reward = 1
 		}
 		bandit.Update(arm, float64(reward))
+
+		chosenArms[i] = arm
+		rewards[i] = float64(reward)
+		if i == 0 {
+			cumulativeRewards[i] = float64(reward)
+		} else {
+			cumulativeRewards[i] = cumulativeRewards[i-1] + float64(reward)
+		}
 	}
 	log.Println(bandit)
+}
+
+func TestSimulate(t *testing.T) {
+	nArms := 3
+	epsilon := 0.1
+	means := []float64{0.1, 0.8, 0.1}
+	bandit := NewEpsilonGreedy(nArms, epsilon)
+
+	bernoullis := make([]BernoulliArm, nArms)
+	for i := 0; i < nArms; i++ {
+		bernoullis[i] = BernoulliArm{p: means[i]}
+	}
+	index, chosenArms, rewards, cumulativeRewards := Simulate(bandit, 1000, bernoullis)
+
+	file, _ := os.Create("greedy.csv")
+	defer file.Close()
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	writer.Write([]string{"index", "chosen_arm", "reward", "cumulative_rewards"})
+	for _, value := range index {
+		err := writer.Write([]string{
+			fmt.Sprint(value),
+			fmt.Sprint(chosenArms[value]),
+			fmt.Sprint(rewards[value]),
+			fmt.Sprint(cumulativeRewards[value]),
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
 }
 
 // func TestPull(t *testing.T) {
