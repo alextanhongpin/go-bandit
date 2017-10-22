@@ -7,11 +7,10 @@ import (
 	"math/rand"
 	"os"
 	"testing"
-	"time"
 )
 
 func TestAnnealingBandit(t *testing.T) {
-	rand.Seed(time.Now().UnixNano())
+	// rand.Seed(time.Now().UnixNano())
 	softmax := NewAnnealingSoftmax(3)
 	for i := 0; i < 100000; i++ {
 		arm := softmax.SelectArm()

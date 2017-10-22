@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 # "index", "chosen_arm", "reward", "cumulative_rewards"}
 
+# df = pd.read_csv("ucb1.csv")
 df = pd.read_csv("annealing_softmax.csv")
 
 df["ratio"] = [ v / (k + 1) for k,v in enumerate(df["cumulative_rewards"])]
