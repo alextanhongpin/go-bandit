@@ -5,10 +5,15 @@ import (
 )
 
 type UCB struct {
-	Epsilon float64
+	// Epsilon float64
 	Counts  []int64
 	Rewards []float64
 	N       int
+}
+
+func (u *UCB) Init() {
+	u.Counts = make([]int64, u.N)
+	u.Rewards = make([]float64, u.N)
 }
 
 func (u *UCB) SelectArm() int {
@@ -37,4 +42,11 @@ func (u *UCB) Update(chosenArm int, reward float64) {
 	value := u.Rewards[chosenArm]
 	newValue := ((n-1)/n)*value + (1/n)*reward
 	u.Rewards[chosenArm] = newValue
+}
+func NewUCB(n int) *UCB {
+	ucb := UCB{
+		N: n,
+	}
+	ucb.Init()
+	return &ucb
 }
