@@ -32,6 +32,7 @@ func sumFloat64(values ...float64) float64 {
 func max(values ...float64) int {
 	value := math.Inf(-1)
 	index := 0
+	// Mutex
 	for i, v := range values {
 		if float64(v) > float64(value) {
 			value = float64(v)

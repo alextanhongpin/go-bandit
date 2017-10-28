@@ -2,10 +2,12 @@ package bandit
 
 import (
 	"math/rand"
+	"sync"
 )
 
 // EpsilonGreedy represents the bandit data
 type EpsilonGreedy struct {
+	sync.Mutex
 	Epsilon float64   `json:"epsilon"`
 	Counts  []int64   `json:"counts"`
 	Rewards []float64 `json:"values"`
@@ -16,11 +18,14 @@ type EpsilonGreedy struct {
 // threshold, and explore if the value is less than epsilon
 func (b *EpsilonGreedy) SelectArm() int {
 	// Exploit
+	b.Lock()
+	rewards := b.Rewards
+	b.Unlock()
 	if rand.Float64() > b.Epsilon {
-		return max(b.Rewards...)
+		return max(rewards...)
 	}
 	// Explore
-	return rand.Intn(len(b.Rewards))
+	return rand.Intn(len(rewards))
 }
 
 // Update will update an arm with some reward value,
@@ -30,7 +35,10 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	n := float64(b.Counts[chosenArm])
 	v := float64(b.Rewards[chosenArm])
 	newValue := (v*(n-1) + reward) / n
+	// Should lock the mutex here
+	b.Lock()
 	b.Rewards[chosenArm] = newValue
+	b.Unlock()
 }
 
 // SetRewards sets the values to the input specified
