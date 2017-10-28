@@ -31,9 +31,19 @@ func (b *EpsilonGreedy) SelectArm() int {
 // Update will update an arm with some reward value,
 // e.g. click = 1, no click = 0
 func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
-	b.Counts[chosenArm]++
-	n := float64(b.Counts[chosenArm])
+	b.Lock()
+	count := b.Counts[chosenArm]
+	b.Unlock()
+
+	b.Lock()
+	b.Counts[chosenArm] = count + 1
+	b.Unlock()
+
+	n := float64(count + 1)
+	b.Lock()
 	v := float64(b.Rewards[chosenArm])
+	b.Unlock()
+
 	newValue := (v*(n-1) + reward) / n
 	// Should lock the mutex here
 	b.Lock()
@@ -43,12 +53,16 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 
 // SetRewards sets the values to the input specified
 func (b *EpsilonGreedy) SetRewards(rewards []float64) {
+	b.Lock()
 	b.Rewards = rewards
+	b.Unlock()
 }
 
 // SetCounts sets the counts to the input specified
 func (b *EpsilonGreedy) SetCounts(counts []int64) {
+	b.Lock()
 	b.Counts = counts
+	b.Unlock()
 }
 
 // NewEpsilonGreedy returns a pointer to the EpsilonGreedy struct
