@@ -35,17 +35,20 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	count := b.Counts[chosenArm]
 	b.Unlock()
 
+	newCount := count + 1
+
 	b.Lock()
-	b.Counts[chosenArm] = count + 1
+	b.Counts[chosenArm] = newCount
 	b.Unlock()
 
-	n := float64(count + 1)
+	n := float64(newCount)
+
 	b.Lock()
 	v := float64(b.Rewards[chosenArm])
 	b.Unlock()
 
 	newValue := (v*(n-1) + reward) / n
-	// Should lock the mutex here
+
 	b.Lock()
 	b.Rewards[chosenArm] = newValue
 	b.Unlock()
