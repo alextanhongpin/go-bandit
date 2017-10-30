@@ -7,7 +7,7 @@ import (
 
 // EpsilonGreedy represents the bandit data
 type EpsilonGreedy struct {
-	sync.Mutex
+	sync.RWMutex
 	Epsilon float64   `json:"epsilon"`
 	Counts  []int64   `json:"counts"`
 	Rewards []float64 `json:"values"`
@@ -18,9 +18,9 @@ type EpsilonGreedy struct {
 // threshold, and explore if the value is less than epsilon
 func (b *EpsilonGreedy) SelectArm() int {
 	// Exploit
-	b.Lock()
+	b.RLock()
 	rewards := b.Rewards
-	b.Unlock()
+	b.RUnlock()
 	if rand.Float64() > b.Epsilon {
 		return max(rewards...)
 	}
@@ -31,9 +31,9 @@ func (b *EpsilonGreedy) SelectArm() int {
 // Update will update an arm with some reward value,
 // e.g. click = 1, no click = 0
 func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
-	b.Lock()
+	b.RLock()
 	count := b.Counts[chosenArm]
-	b.Unlock()
+	b.RUnlock()
 
 	newCount := count + 1
 
@@ -43,9 +43,9 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 
 	n := float64(newCount)
 
-	b.Lock()
+	b.RLock()
 	v := float64(b.Rewards[chosenArm])
-	b.Unlock()
+	b.RUnlock()
 
 	newValue := (v*(n-1) + reward) / n
 
