@@ -1,6 +1,7 @@
 package bandit
 
 import (
+	"log"
 	"math/rand"
 	"sync"
 )
@@ -32,11 +33,15 @@ func (b *EpsilonGreedy) SelectArm() int {
 // e.g. click = 1, no click = 0
 func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	b.RLock()
-	count := b.Counts[chosenArm]
+	count, ok := b.Counts[chosenArm]
+	if !ok {
+		log.Fatal("error")
+	}
 	b.RUnlock()
 
 	newCount := count + 1
 
+	// The data race exists because slices are reference types in Go. They are generally passed by value, but being reference types, any changes made to the one value is reflected in another.
 	b.Lock()
 	b.Counts[chosenArm] = newCount
 	b.Unlock()
@@ -44,10 +49,13 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	n := float64(newCount)
 
 	b.RLock()
-	v := float64(b.Rewards[chosenArm])
+	v, ok := b.Rewards[chosenArm]
+	if !ok {
+		log.Fatal("error")
+	}
 	b.RUnlock()
 
-	newValue := (v*(n-1) + reward) / n
+	newValue := (float64(v)*(n-1) + reward) / n
 
 	b.Lock()
 	b.Rewards[chosenArm] = newValue
@@ -55,14 +63,16 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 }
 
 // SetRewards sets the values to the input specified
-func (b *EpsilonGreedy) SetRewards(rewards []float64) {
+// func (b *EpsilonGreedy) SetRewards(rewards []float64) {
+func (b *EpsilonGreedy) SetRewards(rewards map[int]float64) {
 	b.Lock()
 	b.Rewards = rewards
 	b.Unlock()
 }
 
 // SetCounts sets the counts to the input specified
-func (b *EpsilonGreedy) SetCounts(counts []int64) {
+// func (b *EpsilonGreedy) SetCounts(counts []int64) {
+func (b *EpsilonGreedy) SetCounts(counts map[int]int64) {
 	b.Lock()
 	b.Counts = counts
 	b.Unlock()
@@ -73,7 +83,9 @@ func NewEpsilonGreedy(nArms int, epsilonDecay float64) *EpsilonGreedy {
 	return &EpsilonGreedy{
 		N:       nArms,
 		Epsilon: epsilonDecay,
-		Rewards: make([]float64, nArms),
-		Counts:  make([]int64, nArms),
+		// Rewards: make([]float64, nArms),
+		// Counts:  make([]int64, nArms),
+		Rewards: make(map[int]float64, nArms),
+		Counts:  make(map[int]int64, nArms),
 	}
 }
