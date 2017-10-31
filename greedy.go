@@ -18,9 +18,12 @@ type EpsilonGreedy struct {
 // threshold, and explore if the value is less than epsilon
 func (b *EpsilonGreedy) SelectArm() int {
 	// Exploit
-	b.RLock()
-	rewards := b.Rewards
-	b.RUnlock()
+	// b.RLock()
+	rewards := make([]float64, b.N)
+	for i := 0; i < b.N; i++ {
+		rewards[i] = b.Rewards[i]
+	}
+	// b.RUnlock()
 	if rand.Float64() > b.Epsilon {
 		return max(rewards...)
 	}
