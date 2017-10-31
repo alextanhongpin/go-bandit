@@ -34,26 +34,26 @@ func (b *EpsilonGreedy) SelectArm() int {
 // Update will update an arm with some reward value,
 // e.g. click = 1, no click = 0
 func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
-	b.RLock()
+	b.Lock()
+	// b.RLock()
 	count := b.Counts[chosenArm]
-	b.RUnlock()
+	// b.RUnlock()
 
 	newCount := count + 1
 
 	// The data race exists because slices are reference types in Go. They are generally passed by value, but being reference types, any changes made to the one value is reflected in another.
-	b.Lock()
+	// b.Lock()
 	b.Counts[chosenArm] = newCount
-	b.Unlock()
+	// b.Unlock()
 
 	n := float64(newCount)
 
-	b.RLock()
+	// b.RLock()
 	v := b.Rewards[chosenArm]
-	b.RUnlock()
+	// b.RUnlock()
 
 	newValue := (float64(v)*(n-1) + reward) / n
 
-	b.Lock()
 	b.Rewards[chosenArm] = newValue
 	b.Unlock()
 }
