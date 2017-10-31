@@ -1,7 +1,6 @@
 package bandit
 
 import (
-	"log"
 	"math/rand"
 	"sync"
 )
@@ -9,10 +8,10 @@ import (
 // EpsilonGreedy represents the bandit data
 type EpsilonGreedy struct {
 	sync.RWMutex
-	Epsilon float64   `json:"epsilon"`
-	Counts  []int64   `json:"counts"`
-	Rewards []float64 `json:"values"`
-	N       int       `json:"n"`
+	Epsilon float64         `json:"epsilon"`
+	Counts  map[int]int64   `json:"counts"`
+	Rewards map[int]float64 `json:"values"`
+	N       int             `json:"n"`
 }
 
 // SelectArm chooses an arm that exploits if the value is more than the epsilon
@@ -33,10 +32,7 @@ func (b *EpsilonGreedy) SelectArm() int {
 // e.g. click = 1, no click = 0
 func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	b.RLock()
-	count, ok := b.Counts[chosenArm]
-	if !ok {
-		log.Fatal("error")
-	}
+	count := b.Counts[chosenArm]
 	b.RUnlock()
 
 	newCount := count + 1
@@ -49,10 +45,7 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	n := float64(newCount)
 
 	b.RLock()
-	v, ok := b.Rewards[chosenArm]
-	if !ok {
-		log.Fatal("error")
-	}
+	v := b.Rewards[chosenArm]
 	b.RUnlock()
 
 	newValue := (float64(v)*(n-1) + reward) / n
