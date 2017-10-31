@@ -38,7 +38,7 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	newCount := count + 1
 
 	b.Lock()
-	b.Counts[chosenArm] = newCount
+	b.Counts[chosenArm] = *newCount
 	b.Unlock()
 
 	n := float64(newCount)
@@ -50,7 +50,7 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 	newValue := (v*(n-1) + reward) / n
 
 	b.Lock()
-	b.Rewards[chosenArm] = newValue
+	b.Rewards[chosenArm] = *newValue
 	b.Unlock()
 }
 
