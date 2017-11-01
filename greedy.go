@@ -82,12 +82,20 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) {
 
 // NewEpsilonGreedy returns a pointer to the EpsilonGreedy struct
 func NewEpsilonGreedy(nArms int, epsilonDecay float64) *EpsilonGreedy {
+
+	rewards := cmap.New()
+	counts := cmap.New()
+
+	for i := 0; i < nArms; n++ {
+		rewards.Set(fmt.Sprint(i), 0)
+		counts.Set(fmt.Sprint(i), 0)
+	}
 	return &EpsilonGreedy{
 		N:       nArms,
 		Epsilon: epsilonDecay,
 		// Rewards: make([]float64, nArms),
 		// Counts:  make([]int64, nArms),
-		Rewards: cmap.New(),
-		Counts:  cmap.New(),
+		Rewards: rewards,
+		Counts:  counts,
 	}
 }
