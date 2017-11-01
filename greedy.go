@@ -86,7 +86,7 @@ func NewEpsilonGreedy(nArms int, epsilonDecay float64) *EpsilonGreedy {
 	rewards := cmap.New()
 	counts := cmap.New()
 
-	for i := 0; i < nArms; n++ {
+	for i := 0; i < nArms; i++ {
 		rewards.Set(fmt.Sprint(i), 0)
 		counts.Set(fmt.Sprint(i), 0)
 	}
