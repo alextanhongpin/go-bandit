@@ -2,7 +2,6 @@ package bandit
 
 import (
 	"math"
-	"math/rand"
 )
 
 func sum(values ...int) int {
@@ -42,13 +41,11 @@ func max(values ...float64) int {
 	return index
 }
 
-func categoricalProb(probs ...float64) int {
-	z := rand.Float64()
+func categoricalProb(probability float64, probs ...float64) int {
 	var cumulativeProb float64
 	for i := 0; i < len(probs); i++ {
-		prob := probs[i]
-		cumulativeProb += prob
-		if cumulativeProb > z {
+		cumulativeProb += probs[i]
+		if cumulativeProb > probability {
 			return i
 		}
 	}

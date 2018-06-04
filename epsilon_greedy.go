@@ -1,20 +1,11 @@
 package bandit
 
 import (
-	"errors"
 	"math/rand"
 	"sync"
 )
 
-var (
-	ErrInvalidEpsilon      = errors.New("epsilon must be in range 0 to 1")
-	ErrInvalidLength       = errors.New("counts and rewards must be of equal length")
-	ErrInvalidArms         = errors.New("arms must be greater than zero")
-	ErrArmsIndexOutOfRange = errors.New("arms index is out of range")
-	ErrInvalidReward       = errors.New("reward must be greater than zero")
-)
-
-// EpsilonGreedy represents the bandit data
+// EpsilonGreedy represents the epsilon greedy algorithm
 type EpsilonGreedy struct {
 	sync.RWMutex
 	Epsilon float64   `json:"epsilon"`
@@ -34,11 +25,15 @@ func (b *EpsilonGreedy) Init(nArms int) error {
 
 // SelectArm chooses an arm that exploits if the value is more than the epsilon
 // threshold, and explore if the value is less than epsilon
-func (b *EpsilonGreedy) SelectArm(prob Prob) int {
+func (b *EpsilonGreedy) SelectArm(probability float64) int {
+	b.RLock()
+	defer b.RUnlock()
+
 	// Exploit
-	if prob.Random() > b.Epsilon {
+	if probability > b.Epsilon {
 		return max(b.Rewards...)
 	}
+
 	// Explore
 	return rand.Intn(len(b.Rewards))
 }

@@ -29,17 +29,28 @@ func TestNewEpsilonGreedy_WithAllParams(t *testing.T) {
 func TestNewEpsilonGreedy_WithIncorrectParams(t *testing.T) {
 	assert := assert.New(t)
 
-	b, err := NewEpsilonGreedy(-0.1, nil, nil)
-	assert.Nil(b)
-	assert.Equal(ErrInvalidEpsilon, err, "should return err")
+	tests := []struct {
+		epsilon float64
+		counts  []int
+		rewards []float64
+		err     bool
+		errMsg  string
+	}{
+		{-0.1, nil, nil, true, "epsilon must be in range 0 to 1"},
+		{1.1, nil, nil, true, "epsilon must be in range 0 to 1"},
+		{1.1, []int{0, 0}, nil, true, "counts and rewards must be of equal length"},
+		{1.0, []int{0, 0}, nil, true, "counts and rewards must be of equal length"},
+		{1.0, nil, []float64{0.0}, true, "counts and rewards must be of equal length"},
+		{1.0, []int{0, 0, 0, 0, 0}, []float64{0.0}, true, "counts and rewards must be of equal length"},
+	}
 
-	b, err = NewEpsilonGreedy(1.1, nil, nil)
-	assert.Nil(b)
-	assert.Equal(ErrInvalidEpsilon, err, "should return error")
-
-	b, err = NewEpsilonGreedy(1, []int{0, 0}, []float64{0.0})
-	assert.Nil(b)
-	assert.Equal(ErrInvalidLength, err, "should return error")
+	for _, tt := range tests {
+		b, err := NewEpsilonGreedy(tt.epsilon, tt.counts, tt.rewards)
+		assert.Nil(b)
+		if tt.err {
+			assert.Error(err, tt.errMsg)
+		}
+	}
 }
 
 func TestEpsilonInit_WithValidParams(t *testing.T) {
