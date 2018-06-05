@@ -6,53 +6,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewEpsilonGreedy_WithEpsilon(t *testing.T) {
-	assert := assert.New(t)
-
-	b, err := NewEpsilonGreedy(0.1, nil, nil)
-	assert.Nil(err)
-	assert.Nil(b.Counts)
-	assert.Nil(b.Rewards)
-	assert.Equal(0.1, b.Epsilon, "epsilon should be correct")
-}
-
-func TestNewEpsilonGreedy_WithAllParams(t *testing.T) {
-	assert := assert.New(t)
-
-	b, err := NewEpsilonGreedy(0.1, []int{0, 0, 0}, []float64{0.0, 0.0, 0.0})
-	assert.Nil(err)
-	assert.Equal(0.1, b.Epsilon, "epsilon should be correct")
-	assert.Equal([]int{0, 0, 0}, b.Counts, "counts should be equal")
-	assert.Equal([]float64{0.0, 0.0, 0.0}, b.Rewards, "rewards should be equal")
-}
-
-func TestNewEpsilonGreedy_WithIncorrectParams(t *testing.T) {
+func TestEpsilonGreedy_New(t *testing.T) {
 	assert := assert.New(t)
 
 	tests := []struct {
 		epsilon float64
 		counts  []int
 		rewards []float64
-		err     bool
-		errMsg  string
+		err     error
 	}{
-		{-0.1, nil, nil, true, "epsilon must be in range 0 to 1"},
-		{1.1, nil, nil, true, "epsilon must be in range 0 to 1"},
-		{1.1, []int{0, 0}, nil, true, "counts and rewards must be of equal length"},
-		{1.0, []int{0, 0}, nil, true, "counts and rewards must be of equal length"},
-		{1.0, nil, []float64{0.0}, true, "counts and rewards must be of equal length"},
-		{1.0, []int{0, 0, 0, 0, 0}, []float64{0.0}, true, "counts and rewards must be of equal length"},
+		{0.1, nil, nil, nil},
+		{0.1, []int{0, 0, 0}, []float64{0.0, 0.0, 0.0}, nil},
+		{-0.1, nil, nil, ErrInvalidEpsilon},
+		{1.1, nil, nil, ErrInvalidEpsilon},
+		{1.1, []int{0, 0}, nil, ErrInvalidEpsilon},
+		{1.0, []int{0, 0}, nil, ErrInvalidLength},
+		{1.0, nil, []float64{0.0}, ErrInvalidLength},
+		{1.0, []int{0, 0, 0, 0, 0}, []float64{0.0}, ErrInvalidLength},
 	}
 
-	for _, tt := range tests {
-		b, err := NewEpsilonGreedy(tt.epsilon, tt.counts, tt.rewards)
-		assert.Nil(b)
-		if tt.err {
-			assert.Error(err, tt.errMsg)
+	for i, tt := range tests {
+		_, err := NewEpsilonGreedy(tt.epsilon, tt.counts, tt.rewards)
+		if tt.err != nil {
+			assert.Equal(tt.err, err, "should throw the correct error for test %d", i+1)
+		} else {
+			assert.Nil(err)
 		}
 	}
 }
 
+func TestEpsilonGreedy_SelectArm(t *testing.T) {
+	assert := assert.New(t)
+	b, err := NewEpsilonGreedy(0.1, nil, nil)
+	assert.Nil(err)
+	b.Init(3)
+	arm := b.SelectArm(0.1)
+	assert.Equal(2, arm, "arm should be equal last item")
+	b.Update(arm, 1.0)
+	arm = b.SelectArm(1)
+	assert.Equal(2, arm, "should select the best arm")
+}
 func TestEpsilonInit_WithValidParams(t *testing.T) {
 	assert := assert.New(t)
 

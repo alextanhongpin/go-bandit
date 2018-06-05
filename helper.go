@@ -28,17 +28,15 @@ func sumFloat64(values ...float64) float64 {
 	return total
 }
 
-func max(values ...float64) int {
+func max(values ...float64) (index int) {
 	value := math.Inf(-1)
-	index := 0
-	// Mutex
 	for i, v := range values {
 		if float64(v) > float64(value) {
 			value = float64(v)
 			index = i
 		}
 	}
-	return index
+	return
 }
 
 func categoricalProb(probability float64, probs ...float64) int {

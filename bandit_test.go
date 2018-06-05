@@ -2,15 +2,18 @@ package bandit
 
 import (
 	"log"
+	"math/rand"
 )
 
-// Strategy represents the different algorithm that can be used to implement bandit algorithm
-type Strategy interface {
-	SelectArm() (arm int)
-	Update(arm int, reward float64)
+type BernoulliArm struct {
+	p float64
 }
 
-func Simulate(s Strategy, pulls int, arms []BernoulliArm) (index, chosenArms []int, rewards, cumulativeRewards []float64) {
+func (b *BernoulliArm) Pull() bool {
+	return rand.Float64() > b.p
+}
+
+func Simulate(b Bandit, pulls int, arms []BernoulliArm) (index, chosenArms []int, rewards, cumulativeRewards []float64) {
 
 	index = make([]int, pulls)
 	chosenArms = make([]int, pulls)
@@ -18,13 +21,13 @@ func Simulate(s Strategy, pulls int, arms []BernoulliArm) (index, chosenArms []i
 	cumulativeRewards = make([]float64, pulls)
 
 	for i := 0; i < pulls; i++ {
-		arm := s.SelectArm()
+		arm := b.SelectArm(rand.Float64())
 		chosenArm := arms[arm]
 		reward := 0.0
 		if chosenArm.Pull() == true {
 			reward = 1.0
 		}
-		s.Update(arm, reward)
+		b.Update(arm, reward)
 
 		index[i] = i
 		chosenArms[i] = arm
@@ -35,6 +38,6 @@ func Simulate(s Strategy, pulls int, arms []BernoulliArm) (index, chosenArms []i
 			cumulativeRewards[i] = cumulativeRewards[i-1] + float64(reward)
 		}
 	}
-	log.Println(s)
+	log.Println(b)
 	return
 }

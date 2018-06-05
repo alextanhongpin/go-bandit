@@ -56,12 +56,6 @@ import (
 	bandit "github.com/alextanhongpin/go-bandit"
 )
 
-type prob struct{}
-
-func (p *prob) Random() float64 {
-	return rand.Float64()
-}
-
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -105,3 +99,5 @@ Output:
 2018/06/04 23:43:27 bandit: &{RWMutex:{w:{state:0 sema:0} writerSem:0 readerSem:0 readerCount:0 readerWait:0} Epsilon:0.1 Counts:[233 220 512 19 16] Rewards:[0.4592274678111587 0.48181818181818176 0.5097656249999998 0.3684210526315789 0.25]}
 2018/06/04 23:43:27 done
 ```
+
+<!-- go test -cover -run Epsilon -->
