@@ -80,7 +80,9 @@ func (b *UCB) GetCounts() []int {
 	b.RLock()
 	defer b.RUnlock()
 
-	return b.Counts
+	sCopy := make([]int, len(b.Counts))
+	copy(sCopy, b.Counts)
+	return sCopy
 }
 
 // GetRewards returns the rewards
@@ -88,7 +90,9 @@ func (b *UCB) GetRewards() []float64 {
 	b.RLock()
 	defer b.RUnlock()
 
-	return b.Rewards
+	sCopy := make([]float64, len(b.Rewards))
+	copy(sCopy, b.Rewards)
+	return sCopy
 }
 
 // NewUCB returns a pointer to the UCB struct

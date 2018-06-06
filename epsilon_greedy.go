@@ -63,12 +63,22 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) error {
 	return nil
 }
 
+// NOTE: This will cause data race, since slice is a reference
+// func (b *EpsilonGreedy) GetCounts() []int {
+// 	b.RLock()
+// 	defer b.RUnlock()
+
+// 	return b.Counts
+// }
+
 // GetCounts returns the counts
 func (b *EpsilonGreedy) GetCounts() []int {
 	b.RLock()
 	defer b.RUnlock()
 
-	return b.Counts
+	sCopy := make([]int, len(b.Counts))
+	copy(sCopy, b.Counts)
+	return sCopy
 }
 
 // GetRewards returns the rewards
@@ -76,7 +86,9 @@ func (b *EpsilonGreedy) GetRewards() []float64 {
 	b.RLock()
 	defer b.RUnlock()
 
-	return b.Rewards
+	sCopy := make([]float64, len(b.Rewards))
+	copy(sCopy, b.Rewards)
+	return sCopy
 }
 
 // NewEpsilonGreedy returns a pointer to the EpsilonGreedy struct
