@@ -73,6 +73,16 @@ func (b *UCB) Update(chosenArm int, reward float64) error {
 	return nil
 }
 
+// GetCounts returns the counts
+func (b *UCB) GetCounts() []int {
+	return b.Counts
+}
+
+// GetRewards returns the rewards
+func (b *UCB) GetRewards() []float64 {
+	return b.Rewards
+}
+
 // NewUCB returns a pointer to the UCB struct
 func NewUCB(counts []int, rewards []float64) (*UCB, error) {
 	if len(counts) != len(rewards) {

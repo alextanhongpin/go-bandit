@@ -44,6 +44,16 @@ func (b *Softmax) SelectArm(probability float64) int {
 	return categoricalProb(probability, probs...)
 }
 
+// GetCounts returns the counts
+func (b *Softmax) GetCounts() []int {
+	return b.Counts
+}
+
+// GetRewards returns the rewards
+func (b *Softmax) GetRewards() []float64 {
+	return b.Rewards
+}
+
 // Update will update an arm with some reward value,
 // e.g. click = 1, no click = 0
 func (b *Softmax) Update(chosenArm int, reward float64) error {

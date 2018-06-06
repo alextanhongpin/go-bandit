@@ -16,4 +16,6 @@ type Bandit interface {
 	Init(nArms int) error
 	SelectArm(probability float64) int
 	Update(chosenArm int, reward float64) error
+	GetCounts() []int
+	GetRewards() []float64
 }

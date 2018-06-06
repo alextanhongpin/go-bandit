@@ -67,6 +67,16 @@ func (b *AnnealingSoftmax) Update(chosenArm int, reward float64) error {
 	return nil
 }
 
+// GetCounts returns the counts
+func (b *AnnealingSoftmax) GetCounts() []int {
+	return b.Counts
+}
+
+// GetRewards returns the rewards
+func (b *AnnealingSoftmax) GetRewards() []float64 {
+	return b.Rewards
+}
+
 // NewAnnealingSoftmax returns a pointer to the AnnealingSoftmax struct
 func NewAnnealingSoftmax(counts []int, rewards []float64) (*AnnealingSoftmax, error) {
 	if len(counts) != len(rewards) {

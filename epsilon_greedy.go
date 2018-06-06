@@ -61,6 +61,16 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) error {
 	return nil
 }
 
+// GetCounts returns the counts
+func (b *EpsilonGreedy) GetCounts() []int {
+	return b.Counts
+}
+
+// GetRewards returns the rewards
+func (b *EpsilonGreedy) GetRewards() []float64 {
+	return b.Rewards
+}
+
 // NewEpsilonGreedy returns a pointer to the EpsilonGreedy struct
 func NewEpsilonGreedy(epsilon float64, counts []int, rewards []float64) (*EpsilonGreedy, error) {
 	if epsilon < 0 || epsilon > 1 {
