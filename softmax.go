@@ -15,6 +15,9 @@ type Softmax struct {
 
 // Init will initialise the counts and rewards with the provided number of arms
 func (b *Softmax) Init(nArms int) error {
+	b.Lock()
+	defer b.Unlock()
+
 	if nArms < 1 {
 		return ErrInvalidArms
 	}

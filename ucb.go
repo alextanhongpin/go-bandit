@@ -14,6 +14,9 @@ type UCB struct {
 
 // Init will initialise the counts and rewards with the provided number of arms
 func (b *UCB) Init(nArms int) error {
+	b.Lock()
+	defer b.Unlock()
+
 	if nArms < 1 {
 		return ErrInvalidArms
 	}
