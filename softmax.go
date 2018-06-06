@@ -46,11 +46,17 @@ func (b *Softmax) SelectArm(probability float64) int {
 
 // GetCounts returns the counts
 func (b *Softmax) GetCounts() []int {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Counts
 }
 
 // GetRewards returns the rewards
 func (b *Softmax) GetRewards() []float64 {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Rewards
 }
 

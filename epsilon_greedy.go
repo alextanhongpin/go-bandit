@@ -63,11 +63,17 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) error {
 
 // GetCounts returns the counts
 func (b *EpsilonGreedy) GetCounts() []int {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Counts
 }
 
 // GetRewards returns the rewards
 func (b *EpsilonGreedy) GetRewards() []float64 {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Rewards
 }
 

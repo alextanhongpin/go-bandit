@@ -75,11 +75,17 @@ func (b *UCB) Update(chosenArm int, reward float64) error {
 
 // GetCounts returns the counts
 func (b *UCB) GetCounts() []int {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Counts
 }
 
 // GetRewards returns the rewards
 func (b *UCB) GetRewards() []float64 {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Rewards
 }
 

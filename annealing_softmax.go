@@ -69,11 +69,17 @@ func (b *AnnealingSoftmax) Update(chosenArm int, reward float64) error {
 
 // GetCounts returns the counts
 func (b *AnnealingSoftmax) GetCounts() []int {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Counts
 }
 
 // GetRewards returns the rewards
 func (b *AnnealingSoftmax) GetRewards() []float64 {
+	b.RLock()
+	defer b.RUnlock()
+
 	return b.Rewards
 }
 
