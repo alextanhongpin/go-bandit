@@ -63,9 +63,10 @@ func (b *Softmax) GetRewards() []float64 {
 // Update will update an arm with some reward value,
 // e.g. click = 1, no click = 0
 func (b *Softmax) Update(chosenArm int, reward float64) error {
-	// It is safe to call len(ch) concurrently, but the obtained value is unavoidably racy per se.
-	// In our case, the len is fixed, so we can call the lock/unlock later.
-	// This is a micro-optimization, mainly because defer can be expensive.
+	b.Lock()
+	defer b.Unlock()
+
+	// NOTE: Lock is required is when reading the len
 	if chosenArm < 0 || chosenArm >= len(b.Rewards) {
 		return ErrArmsIndexOutOfRange
 	}
@@ -73,15 +74,11 @@ func (b *Softmax) Update(chosenArm int, reward float64) error {
 		return ErrInvalidReward
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.Counts[chosenArm]++
 	n := float64(b.Counts[chosenArm])
 
 	oldRewards := b.Rewards[chosenArm]
-	newRewards := (oldRewards*(n-1) + reward) / n
-	b.Rewards[chosenArm] = newRewards
+	b.Rewards[chosenArm] = (oldRewards*(n-1) + reward) / n
 
 	return nil
 }

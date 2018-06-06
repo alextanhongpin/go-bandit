@@ -41,6 +41,9 @@ func (b *EpsilonGreedy) SelectArm(probability float64) int {
 // Update will update an arm with some reward value,
 // e.g. click = 1, no click = 0
 func (b *EpsilonGreedy) Update(chosenArm int, reward float64) error {
+	b.Lock()
+	defer b.Unlock()
+
 	if chosenArm < 0 || chosenArm >= len(b.Rewards) {
 		return ErrArmsIndexOutOfRange
 	}
@@ -48,15 +51,11 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) error {
 		return ErrInvalidReward
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.Counts[chosenArm]++
 	n := float64(b.Counts[chosenArm])
 
 	oldRewards := b.Rewards[chosenArm]
-	newRewards := (oldRewards*(n-1) + reward) / n
-	b.Rewards[chosenArm] = newRewards
+	b.Rewards[chosenArm] = (oldRewards*(n-1) + reward) / n
 
 	return nil
 }
