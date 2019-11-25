@@ -63,14 +63,6 @@ func (b *EpsilonGreedy) Update(chosenArm int, reward float64) error {
 	return nil
 }
 
-// NOTE: This will cause data race, since slice is a reference
-// func (b *EpsilonGreedy) GetCounts() []int {
-// 	b.RLock()
-// 	defer b.RUnlock()
-
-// 	return b.Counts
-// }
-
 // GetCounts returns the counts
 func (b *EpsilonGreedy) GetCounts() []int {
 	b.RLock()
