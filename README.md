@@ -1,4 +1,8 @@
+[![](https://godoc.org/github.com/alextanhongpin/go-bandit?status.svg)](http://godoc.org/github.com/alextanhongpin/go-bandit)
+
+
 # Multi-Armed Bandit Algorithm
+
 
 Bandit algorithm balances _exploration_ and _exploitation_, and is part of **reinforcement learning*. 
 
